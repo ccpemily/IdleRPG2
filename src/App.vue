@@ -1,70 +1,42 @@
 <script setup lang="ts">
 import MainPanel from './components/MainPanel.vue'
 import SidedCharacterPanel from './components/SidedCharacterPanel.vue'
-import { clock, mainLogic } from './main.js';
+import { mainLogic } from './main.ts';
 
-function onClockClick(event: MouseEvent) {
-  if (!clock.running) {
-    clock.run();
+function onClockClick(_: MouseEvent) {
+  if (!mainLogic.eventclock.running) {
+    mainLogic.eventclock.start();
   }
   else {
-    clock.stop();
+    mainLogic.eventclock.stop();
   }
 }
 
 </script>
 
 <template>
-  <div class="app_main">
-    <div class="leftside" style="display: flex; flex-direction: column;">
-      <SidedCharacterPanel style="flex: 1;" />
-      <div class="bottom_layer">
-        <button type="button" class="bottom_buttons" @click="onClockClick">{{ clock.running ? $t("button.main.pause") :
-          $t("button.main.resume") }}</button>
-        <button type="button" class="bottom_buttons" @click="">{{ $t("info.current", [mainLogic.current]) }}</button>
+  <div class="flex flex-row w-full h-full">
+    <div class="flex flex-col flex-1">
+      <SidedCharacterPanel class="flex-1" />
+      <div>
+        <button type="button" class="btn rounded-none" @click="onClockClick">
+          {{ mainLogic.eventclock.running ? $t("button.main.pause") : $t("button.main.resume") }}
+        </button>
+        <button type="button" class="btn rounded-none" @click="">{{ $t("button.main.save") }}</button>
+        <button type="button" class="btn rounded-none" @click="">{{ $t("button.main.load") }}</button>
+        <button type="button" class="btn rounded-none" @click="">{{ $t("button.main.import") }}</button>
+        <button type="button" class="btn rounded-none" @click="">{{ $t("button.main.export") }}</button>
+        <button type="button" class="btn rounded-none" @click="">{{ $t("button.main.reset") }}</button>
       </div>
     </div>
-    <div class="main">
+    <div class="main" style="flex: 2;">
       <MainPanel />
     </div>
   </div>
 </template>
 
-<style scoped>
-.app_main {
-  display: flex;
-  flex-direction: row;
-  position: fixed;
-  left: 0%;
-  top: 0%;
-
-  height: 100%;
-  width: 100%;
-}
-
-.main {
-  position: relative;
-  width: 70%;
-  right: 0%;
-
-  height: 100%;
-}
-
-.leftside {
-  position: relative;
-  width: 30%;
-  height: 100%;
-}
-
-.bottom_layer {
-  display: flex;
-  flex-direction: row;
-
-  position: relative;
-  bottom: 0%;
-}
-
-.bottom_buttons {
-  padding: auto;
+<style>
+:root,html,body,#app{
+  @apply w-full h-full m-0 p-0;
 }
 </style>

@@ -9,6 +9,7 @@ export async function loadLocale(i18n, locale) {
 }
 
 export const i18n = createI18n({
+    legacy:false,
     locale: 'zh_cn',
     fallbackLocale: 'zh_cn'
 })
