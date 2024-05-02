@@ -1,0 +1,9 @@
+{
+    "button.main.resume": "继续",
+    "button.main.pause": "暂停",
+    "info.current": "当前数值：{0}",
+    "topbar.events": "地区事件/战斗",
+    "topbar.inventory": "物品栏",
+    "topbar.story": "查看日志",
+    "sidedpanel.title.character": "角色状态"
+}

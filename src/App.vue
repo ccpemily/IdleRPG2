@@ -1,30 +1,70 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
+<script setup lang="ts">
+import MainPanel from './components/MainPanel.vue'
+import SidedCharacterPanel from './components/SidedCharacterPanel.vue'
+import { clock, mainLogic } from './main.js';
+
+function onClockClick(event: MouseEvent) {
+  if (!clock.running) {
+    clock.run();
+  }
+  else {
+    clock.stop();
+  }
+}
+
 </script>
 
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="app_main">
+    <div class="leftside" style="display: flex; flex-direction: column;">
+      <SidedCharacterPanel style="flex: 1;" />
+      <div class="bottom_layer">
+        <button type="button" class="bottom_buttons" @click="onClockClick">{{ clock.running ? $t("button.main.pause") :
+          $t("button.main.resume") }}</button>
+        <button type="button" class="bottom_buttons" @click="">{{ $t("info.current", [mainLogic.current]) }}</button>
+      </div>
+    </div>
+    <div class="main">
+      <MainPanel />
+    </div>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+.app_main {
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  left: 0%;
+  top: 0%;
+
+  height: 100%;
+  width: 100%;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+
+.main {
+  position: relative;
+  width: 70%;
+  right: 0%;
+
+  height: 100%;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+.leftside {
+  position: relative;
+  width: 30%;
+  height: 100%;
+}
+
+.bottom_layer {
+  display: flex;
+  flex-direction: row;
+
+  position: relative;
+  bottom: 0%;
+}
+
+.bottom_buttons {
+  padding: auto;
 }
 </style>
