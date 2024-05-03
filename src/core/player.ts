@@ -10,6 +10,9 @@ export class Player {
     private _experience = 50;
     private _level = 1;
 
+    attributePerks = 20;
+
+    // #region BaseStatus
     baseMaxHealth = 200;
     baseMaxStamina = 100;
     baseMaxMana = 100;
@@ -18,17 +21,32 @@ export class Player {
     baseHealthRegen = 0.5;
     baseStaminaRegen = 0.3;
     baseManaRegen = 0.4;
+    // #endregion
+
+    // #region BaseAttributes
+    baseStrength = 8; // STR
+    baseConstitution = 8; // CON
+    baseDexterity = 8; // DEX
+    baseIntelligence = 8; // INT
+    baseWisdom = 8; // WIS
+    baseCharisma = 8; // CHA
+    // #endregion
+
+    // #region BaseCombatStatus
+    baseAttackPower = 1;
+    baseAttackSpeed = 1;
+    baseArmorClass = 10; // AC
+    // #endregion
 
     statusModifiers: PlayerStatusModifier[] = [];
     attributesModifiers: PlayerAttributesModifier[] = [];
     combatModifiers: PlayerCombatModifier[] = [];
 
-    ticksAfterDamaged: number = -1;
-
     get inRestingArea(){
         return Locations[mainLogic.currentLocation].isRestingArea
     }
 
+    // #region Status Properties
     get health(){
         return this._health;
     }
@@ -153,6 +171,7 @@ export class Player {
     get manaRegen(){
         return this.inRestingArea ? this.baseManaRegen : 0;
     }
+    // #endregion
 
     constructor(name: string){
         this.name = name;
@@ -166,18 +185,36 @@ export class Player {
         this.health += this.healthRegen;
         this.mana += this.manaRegen;
         this.stamina += this.staminaRegen;
-        //this.experience += 13;
+        this.experience += 8;
     }
 
     onLevelUp(){
         this._level += 1;
-        this.baseMaxHealth += 21 + this.level * 4 + 0.7 * this.level * this.level
-        this.baseMaxMana += 11 + this.level * 2 + 0.3 * this.level * this.level
-        this.baseMaxStamina += 13 + this.level * 3 + 0.4 * this.level * this.level
+        this.baseMaxHealth += 21 + this.level * 4 + 0.7 * this.level * this.level;
+        this.baseMaxMana += 11 + this.level * 2 + 0.3 * this.level * this.level;
+        this.baseMaxStamina += 13 + this.level * 3 + 0.4 * this.level * this.level;
 
-        this.baseHealthRegen += 0.1 + this.level * 0.01 + 0.008 * this.level * this.level
-        this.baseManaRegen += 0.05 + this.level * 0.01 + 0.004 * this.level * this.level
-        this.baseStaminaRegen += 0.07 + this.level * 0.01 + 0.003 * this.level * this.level
+        this.baseHealthRegen += 0.1 + this.level * 0.01 + 0.008 * this.level * this.level;
+        this.baseManaRegen += 0.05 + this.level * 0.01 + 0.004 * this.level * this.level;
+        this.baseStaminaRegen += 0.07 + this.level * 0.01 + 0.003 * this.level * this.level;
+
+        this.attributePerks += 1 + Math.floor(this.level / 10);
+    }
+
+    onPerksAllocated({
+        str, con, dex, int, wis, cha,
+        consumed
+    }:{
+        str: number, con: number, dex: number, int: number, wis: number, cha: number,
+        consumed: number
+    }){
+        this.baseStrength += str;
+        this.baseConstitution += con;
+        this.baseDexterity += dex;
+        this.baseIntelligence += int;
+        this.baseWisdom += wis;
+        this.baseCharisma += cha;
+        this.attributePerks -= consumed;
     }
 }
 

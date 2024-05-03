@@ -6,9 +6,11 @@ import { mainLogic } from './main.ts';
 function onClockClick(_: MouseEvent) {
   if (!mainLogic.eventclock.running) {
     mainLogic.eventclock.start();
+    mainLogic.enableUIAnimation();
   }
   else {
     mainLogic.eventclock.stop();
+    mainLogic.disableUIAnimation();
   }
 }
 

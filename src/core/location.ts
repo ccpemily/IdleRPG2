@@ -1,20 +1,31 @@
 import { ActivityID } from "./activity";
+import { NPC } from "./npc";
 
 export class Location {
-    name: string;
-    activities: ActivityID[] = []
+    id: string;
+    activities: ActivityID[] = [];
+    npcs: NPC[] = [];
     isRestingArea: boolean = false;
-    constructor(name: string, activities:ActivityID[]=[], restingArea?:boolean) {
-        this.name = name;
+
+    get name(){
+        return "location." + this.id + ".name";
+    }
+
+    get description(){
+        return "location." + this.id + ".description";
+    }
+
+    constructor(id: string, activities:ActivityID[]=[], restingArea?:boolean) {
+        this.id = id;
         this.activities = this.activities.concat(activities);
         this.isRestingArea = restingArea;
     }
 }
 
 export const Locations = {
-    "home": new Location("location.home.name", ["sleep"], true),
-    "village": new Location("location.village.name", ["run_around"], true),
-    "cave": new Location("location.cave.name")
+    "home": new Location("home", ["sleep"], true),
+    "village": new Location("village", ["run_around"], true),
+    "cave": new Location("cave")
 } as const;
 
 export type LocationId = keyof typeof Locations

@@ -4,30 +4,12 @@ import { mainLogic } from "../../main";
 
 export default function ({ id, onstop }: { id: ActivityID, onstop: () => void}) {
     const { t } = useI18n()
+    const act = Activities[id];
     return (
-        <div>
-            <ul class="menu">
-                <li><a>
-                        {
-                            (() => {
-                                return t(Activities[id].textWhenDoing) + '.'.repeat(Math.floor(mainLogic.uiclock / 2) % 4)
-                            })()
-                        }
-                </a></li>
-                <li><a class="italic">
-                        {
-                            (() => {
-                                return t(Activities[id].description) + (Activities[id].tickCooldown >= 0 ? t("activity.remains", [Activities[id].tickCooldown]) : "")
-                            })()
-                        }
-                </a></li>
-                <li><a onClick={() => {onstop()}}>{
-                            (() => {
-                                return t(Activities[id].textWhenStop)
-                            })()
-                        }
-                </a></li>
-            </ul>
-        </div>
+        <ul class="menu">
+            <li><a>{ t(act.textWhenDoing) + '.'.repeat(Math.floor(mainLogic.uiframe / 2) % 4) }</a></li>
+            <li><a class="italic text-gray-500">{ t(act.description) + (act.tickCooldown >= 0 ? t("activity.remains", [act.tickCooldown]) : "") }</a></li>
+            <li><a onClick={() => {onstop()}}>{t(act.textWhenStop)}</a></li>
+        </ul>
     )
 }

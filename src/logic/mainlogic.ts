@@ -57,7 +57,9 @@ export class Clock {
 export class MainLogic {
     private static instance: MainLogic;
 
-    uiclock:number = 0;
+    uiframe:number = 0;
+
+    uiclock:number = NaN;
     eventclock: Clock = new Clock();
 
     currentPlayer: Player = new Player("Player");
@@ -87,7 +89,7 @@ export class MainLogic {
     }
 
     init() {
-        setInterval(() => this.uiclock = (this.uiclock + 1) % MAX_UI_FRAME, UI_UPDATE_INTERVAL);
+        //this.uiclock = setInterval(() => this.uiframe = (this.uiframe + 1) % MAX_UI_FRAME, UI_UPDATE_INTERVAL);
         this.eventclock.subscribers.push(() => this.tick())
         this.eventclock.totalTicks = Date.now()
     }
@@ -116,6 +118,17 @@ export class MainLogic {
     stopActivity(){
         Activities[this.currentActivity].onAcitvityCompleted(this);
         this.currentActivity = undefined;
+    }
+
+    enableUIAnimation(){
+        this.disableUIAnimation();
+        this.uiclock = setInterval(() => this.uiframe = (this.uiframe + 1) % MAX_UI_FRAME, UI_UPDATE_INTERVAL);
+    }
+
+    disableUIAnimation(){
+        if(!Number.isNaN(this.uiclock)){
+            clearInterval(this.uiclock);
+        }
     }
 
     static getInstance() {

@@ -1,5 +1,9 @@
-export class Event<T> {
-    handlers:Array<(sender:any, arg: T) => void> = [];
+export class EventArgs {
+    
+}
+
+export class Event<T extends EventArgs> {
+    handlers:Array<(sender:any, arg:T) => void> = [];
 
     constructor(){
 
@@ -10,6 +14,8 @@ export class Event<T> {
     }
 
     invoke(sender:any, arg:T){
-        
+        this.handlers.forEach((handler) => {
+            handler(sender, arg);
+        })
     }
 }

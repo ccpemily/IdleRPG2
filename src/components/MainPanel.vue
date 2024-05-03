@@ -8,6 +8,9 @@ import { mainLogic } from '../main';
 import { LocationId, Routes, Locations } from '../core/location';
 
 import { ActivityID } from '../core/activity';
+import LogPanel from './main/LogPanel.vue';
+import InventoryPanel from './main/InventoryPanel.vue';
+import StoriesPanel from './main/StoriesPanel.vue';
 
 const tab = ref('events' as 'events' | 'inventory' | 'story')
 const loc = computed(() => mainLogic.currentLocation)
@@ -36,20 +39,24 @@ function onStopActivityClick(){
             <input type="radio" v-model="tab" value="story" name="tab_selector" role="tab" class="tab flex-1"
                 :aria-label="$t('topbar.story')">
         </div>
-        <div class=" bg-slate-50 h-0" style="flex-grow: 2;">
+        <div class="flex flex-col bg-slate-50 h-0" style="flex-grow: 2;">
             <LocationPanel v-if="tab == 'events'"/>
+            <InventoryPanel v-if="tab == 'inventory'"/>
+            <StoriesPanel v-if="tab == 'story'"/> 
         </div>
         <div class="flex bg-slate-300 h-0" style="flex-grow: 1;">
             <div style="flex-grow: 1;">
                 <ul class="menu">
-                    <div v-if="Locations[loc].activities.length > 0">
+                    <li v-if="Locations[loc].activities.length > 0">
                         <LocationActivitiesRenderer v-if="!mainLogic.currentActivity" v-for="act in Locations[loc].activities" :activity="act" :onclick="onActivityClick"/>
-                    </div>
+                    </li>
                     <RouteRenderer v-if="!mainLogic.currentActivity" v-for="to in Routes[loc]" :from="loc" :to="to.dst" :onclick="onRouteClick"/>
                     <ActivityRenderer v-if="mainLogic.currentActivity" :id="mainLogic.currentActivity" :onstop="onStopActivityClick"/>
                 </ul>
             </div>
-            <div class="bg-slate-500" style="flex-grow: 2;"></div>
+            <div class="bg-slate-500" style="flex-grow: 2;">
+                <LogPanel/>
+            </div>
         </div>
     </div>
 </template>
