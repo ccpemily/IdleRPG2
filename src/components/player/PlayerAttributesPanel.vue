@@ -1,43 +1,27 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue';
 import { mainLogic } from '../../main';
+import { EntityAttributeType } from '../../core/entity/attribute';
+import PlayerAttributeRenderer from '../tsx/PlayerAttributeRenderer';
 
 let allocatingPerks = false;
 
 let isAllocating = ref(allocatingPerks);
 
-const abbrToFullAttr = {
-    'str': "baseStrength",
-    'con': "baseConstitution",
-    'dex': "baseDexterity",
-    'int': "baseIntelligence",
-    'wis': "baseWisdom",
-    'cha': "baseCharisma"
-}
-
-const fullAttrToAbbr = {
-    "baseStrength": 'str',
-    "baseConstitution": 'con',
-    "baseDexterity": 'dex',
-    "baseIntelligence": 'int',
-    "baseWisdom": 'wis',
-    "baseCharisma": 'cha'
-}
-
 const player = mainLogic.currentPlayer;
 
 const allocatedPerks = reactive({
-    str: 0, con: 0, dex: 0, int: 0, wis: 0, cha: 0, consumed: 0
+    strength: 0, constitution: 0, dexterity: 0, intelligence: 0, wisdom: 0, charisma: 0, consumed: 0
 })
 
-function canAllocateAttribute(name:'baseStrength'|'baseConstitution'|'baseDexterity'|'baseIntelligence'|'baseWisdom'|'baseCharisma'){
-    let cur = player[name] + allocatedPerks[fullAttrToAbbr[name]];
+function canAllocateAttribute(name: EntityAttributeType){
+    let cur = player[name].base + allocatedPerks[name];
     let step = 1 + Math.floor(Math.max(0, cur - 10) / 10);
     return player.attributePerks - allocatedPerks.consumed >= step;
 }
 
-function tryAllocateAttribute(name:'baseStrength'|'baseConstitution'|'baseDexterity'|'baseIntelligence'|'baseWisdom'|'baseCharisma'){
-    let cur = player[name] + allocatedPerks[fullAttrToAbbr[name]];
+function tryAllocateAttribute(name: EntityAttributeType){
+    let cur = player[name].base + allocatedPerks[name];
     let step = 1 + Math.floor(Math.max(0, cur - 10) / 10);
     return step;
 }
@@ -45,36 +29,36 @@ function tryAllocateAttribute(name:'baseStrength'|'baseConstitution'|'baseDexter
 function onAllocatePerksClick(_:MouseEvent){
     if(!isAllocating.value){
         isAllocating.value = true;
-        console.log("Remain: P" + player.attributePerks + ", Allocated: " + allocatedPerks.consumed);
+        //console.log("Remain: P" + player.attributePerks + ", Allocated: " + allocatedPerks.consumed);
     }
 }
 
 function onAllocateConfirmed(_:MouseEvent){
     player.onPerksAllocated(allocatedPerks);
     isAllocating.value = false;
-    allocatedPerks.str = 0;
-    allocatedPerks.con = 0;
-    allocatedPerks.dex = 0;
-    allocatedPerks.int = 0;
-    allocatedPerks.wis = 0;
-    allocatedPerks.cha = 0;
+    allocatedPerks.strength = 0;
+    allocatedPerks.constitution = 0;
+    allocatedPerks.dexterity = 0;
+    allocatedPerks.intelligence = 0;
+    allocatedPerks.wisdom = 0;
+    allocatedPerks.charisma = 0;
     allocatedPerks.consumed = 0;
 }
 
 function onAllocateCanceled(_:MouseEvent){
     isAllocating.value = false;
-    allocatedPerks.str = 0;
-    allocatedPerks.con = 0;
-    allocatedPerks.dex = 0;
-    allocatedPerks.int = 0;
-    allocatedPerks.wis = 0;
-    allocatedPerks.cha = 0;
+    allocatedPerks.strength = 0;
+    allocatedPerks.constitution = 0;
+    allocatedPerks.dexterity = 0;
+    allocatedPerks.intelligence = 0;
+    allocatedPerks.wisdom = 0;
+    allocatedPerks.charisma = 0;
     allocatedPerks.consumed = 0;
 }
 
-function onAttributeClick(attribute:string){
+function onAttributeClick(attribute: EntityAttributeType){
     if(isAllocating.value){
-        let pointToConsume = tryAllocateAttribute(abbrToFullAttr[attribute]);
+        let pointToConsume = tryAllocateAttribute(attribute);
         allocatedPerks.consumed += pointToConsume;
         allocatedPerks[attribute] += 1;
         console.log("Consumed: " + pointToConsume);
@@ -90,72 +74,29 @@ function onAttributeClick(attribute:string){
             <label class="text-center italic">{{ $t("player.attribute.title") }}</label>
         </div>
         <div class="flex flex-row flex-grow w-full">
-            <button type="button" 
-                class="btn rounded-none flex flex-col flex-1"
-                :disabled="isAllocating && !canAllocateAttribute('baseStrength')"
-                :onclick="() => onAttributeClick('str')"
-            >
-                <span class="text-center">{{ $t("player.attribute.str") }}</span>
-                <span class="text-center">{{ player.baseStrength.toFixed(0) + (isAllocating ? "(+" + allocatedPerks['str'] + ")" : '') }}</span>
-            </button>
-            <button type="button" 
-                class="btn rounded-none flex flex-col flex-1"
-                :disabled="isAllocating && !canAllocateAttribute('baseConstitution')"
-                :onclick="() => onAttributeClick('con')"
-            >
-                <span class="text-center">{{ $t("player.attribute.con") }}</span>
-                <span class="text-center">{{ player.baseConstitution.toFixed(0) + (isAllocating ? "(+" + allocatedPerks['con'] + ")" : '') }}</span>
-            </button>
-            <button type="button" 
-                class="btn rounded-none flex flex-col flex-1"
-                :disabled="isAllocating && !canAllocateAttribute('baseDexterity')"
-                :onclick="() => onAttributeClick('dex')"
-            >
-                <span class="text-center">{{ $t("player.attribute.dex") }}</span>
-                <span class="text-center">{{ player.baseDexterity.toFixed(0) + (isAllocating ? "(+" + allocatedPerks['dex'] + ")" : '') }}</span>
-            </button>
+            <PlayerAttributeRenderer id="strength" :isallocating="isAllocating" :onattributeclick="onAttributeClick" :canallocate="canAllocateAttribute" :allocatedperks="allocatedPerks"/>
+            <PlayerAttributeRenderer id="constitution" :isallocating="isAllocating" :onattributeclick="onAttributeClick" :canallocate="canAllocateAttribute" :allocatedperks="allocatedPerks"/>
+            <PlayerAttributeRenderer id="dexterity" :isallocating="isAllocating" :onattributeclick="onAttributeClick" :canallocate="canAllocateAttribute" :allocatedperks="allocatedPerks"/>
         </div>
         <div class="flex flex-row flex-grow w-full">
-            <button type="button" 
-                class="btn rounded-none flex flex-col flex-1"
-                :disabled="isAllocating && !canAllocateAttribute('baseIntelligence')"
-                :onclick="() => onAttributeClick('int')"
-            >
-                <span class="text-center">{{ $t("player.attribute.int") }}</span>
-                <span class="text-center">{{ player.baseIntelligence.toFixed(0) + (isAllocating ? "(+" + allocatedPerks['int'] + ")" : '') }}</span>
-            </button>
-            <button type="button" 
-                class="btn rounded-none flex flex-col flex-1"
-                :disabled="isAllocating && !canAllocateAttribute('baseWisdom')"
-                :onclick="() => onAttributeClick('wis')"
-            >
-                <span class="text-center">{{ $t("player.attribute.wis") }}</span>
-                <span class="text-center">{{ player.baseWisdom.toFixed(0) + (isAllocating ? "(+" + allocatedPerks['wis'] + ")" : '') }}</span>
-            </button>
-            <button type="button" 
-                class="btn rounded-none flex flex-col flex-1"
-                :disabled="isAllocating && !canAllocateAttribute('baseCharisma')"
-                :onclick="() => onAttributeClick('cha')"
-            >
-                <span class="text-center">{{ $t("player.attribute.cha") }}</span>
-                <span class="text-center">{{ player.baseCharisma.toFixed(0) + (isAllocating ? "(+" + allocatedPerks['cha'] + ")" : '') }}</span>
-            </button>
+            <PlayerAttributeRenderer id="intelligence" :isallocating="isAllocating" :onattributeclick="onAttributeClick" :canallocate="canAllocateAttribute" :allocatedperks="allocatedPerks"/>
+            <PlayerAttributeRenderer id="wisdom" :isallocating="isAllocating" :onattributeclick="onAttributeClick" :canallocate="canAllocateAttribute" :allocatedperks="allocatedPerks"/>
+            <PlayerAttributeRenderer id="charisma" :isallocating="isAllocating" :onattributeclick="onAttributeClick" :canallocate="canAllocateAttribute" :allocatedperks="allocatedPerks"/>
         </div>
         <div class="flex flex-row">
-            <button v-if="!isAllocating" 
-                :disabled="player.attributePerks <= 0" 
-                class="btn font-normal text-center text-sm flex-1 rounded-none min-h-0 h-6" 
-                style="background-color: #f2f2f2;"
-                :onclick="onAllocatePerksClick"
-            >{{ $t("player.attribute_perks.text", [player.attributePerks]) }}</button>
+            <div class="tooltip tooltip-bottom flex flex-grow flex-1" :data-tip="$t('player.attribute_perks.description')" v-if="!isAllocating">
+                <button class="btn font-normal text-center text-sm flex-1 rounded-none min-h-0 h-6" 
+                    :disabled="player.attributePerks <= 0" 
+                    style="background-color: #f2f2f2;"
+                    :onclick="onAllocatePerksClick"
+                >{{ $t("player.attribute_perks.text", [player.attributePerks]) }}</button>
+            </div>
             <div v-if="isAllocating" class="flex flex-row flex-grow">
-                <button v-if="isAllocating"
-                    class="btn font-normal text-center text-sm flex-1 rounded-none min-h-0 h-6" 
+                <button class="btn font-normal text-center text-sm flex-1 rounded-none min-h-0 h-6" 
                     style="background-color: #f2f2f2; flex: 4;"
                     :onclick="onAllocateConfirmed"
                 >{{ $t("player.attribute_perks.confirm", [player.attributePerks - allocatedPerks.consumed, player.attributePerks]) }}</button>
-                <button v-if="isAllocating"
-                    class="btn font-normal text-center text-sm flex-1 rounded-none min-h-0 h-6" 
+                <button class="btn font-normal text-center text-sm flex-1 rounded-none min-h-0 h-6" 
                     style="background-color: #f2f2f2; flex: 1;"
                     :onclick="onAllocateCanceled"
                 >{{ $t("player.attribute_perks.cancel") }}</button>

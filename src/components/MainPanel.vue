@@ -11,6 +11,8 @@ import { ActivityID } from '../core/activity';
 import LogPanel from './main/LogPanel.vue';
 import InventoryPanel from './main/InventoryPanel.vue';
 import StoriesPanel from './main/StoriesPanel.vue';
+import LocationNPCsRenderer from './tsx/LocationNPCsRenderer';
+import { NPCsID } from '../core/npc';
 
 const tab = ref('events' as 'events' | 'inventory' | 'story')
 const loc = computed(() => mainLogic.currentLocation)
@@ -27,12 +29,16 @@ function onActivityClick(act: ActivityID){
 function onStopActivityClick(){
     mainLogic.stopActivity();
 }
+
+function onNpcSelectClick(id: NPCsID){
+    mainLogic.startTalkWithNpc(id);
+}
 </script>
 
 <template>
     <div class="w-full h-full flex flex-col overflow-hidden">
         <div role="tablist" class="flex tabs tabs-lifted">
-            <input type="radio" v-model="tab" value="events" name="tab_selector" role="tab" class="tab flex-1"
+            <input type="radio" v-model="tab" value="events" name="tab_selector" role="tab" class="tab flex-1 rounded-none"
                 :aria-label="$t('topbar.events')" checked>
             <input type="radio" v-model="tab" value="inventory" name="tab_selector" role="tab" class="tab flex-1"
                 :aria-label="$t('topbar.inventory')">
@@ -45,13 +51,24 @@ function onStopActivityClick(){
             <StoriesPanel v-if="tab == 'story'"/> 
         </div>
         <div class="flex bg-slate-300 h-0" style="flex-grow: 1;">
-            <div style="flex-grow: 1;">
+            <div style="flex-grow: 1; max-width: 33.33%;">
                 <ul class="menu">
-                    <li v-if="Locations[loc].activities.length > 0">
-                        <LocationActivitiesRenderer v-if="!mainLogic.currentActivity" v-for="act in Locations[loc].activities" :activity="act" :onclick="onActivityClick"/>
+                    <li v-if="Locations[loc].npcs.length > 0 && !mainLogic.currentActivity">
+                        <LocationNPCsRenderer v-if="!mainLogic.currentActivity && !mainLogic.currentSelectedNpc" 
+                            v-for="id in Locations[loc].npcs" :npcid="id" :onclick="onNpcSelectClick"
+                        />
                     </li>
-                    <RouteRenderer v-if="!mainLogic.currentActivity" v-for="to in Routes[loc]" :from="loc" :to="to.dst" :onclick="onRouteClick"/>
-                    <ActivityRenderer v-if="mainLogic.currentActivity" :id="mainLogic.currentActivity" :onstop="onStopActivityClick"/>
+                    <li v-if="Locations[loc].activities.length > 0 && !mainLogic.currentSelectedNpc">
+                        <LocationActivitiesRenderer v-if="!mainLogic.currentActivity && !mainLogic.currentSelectedNpc" 
+                            v-for="act in Locations[loc].activities" :activity="act" :onclick="onActivityClick"
+                        />
+                    </li>
+                    <RouteRenderer v-if="!mainLogic.currentActivity && !mainLogic.currentSelectedNpc" 
+                        v-for="to in Routes[loc]" :from="loc" :to="to.dst" :onclick="onRouteClick"
+                    />
+                    <ActivityRenderer v-if="mainLogic.currentActivity && !mainLogic.currentSelectedNpc" 
+                        :id="mainLogic.currentActivity" :onstop="onStopActivityClick"
+                    />
                 </ul>
             </div>
             <div class="bg-slate-500" style="flex-grow: 2;">

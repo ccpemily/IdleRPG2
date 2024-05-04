@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import MainPanel from './components/MainPanel.vue'
-import SidedCharacterPanel from './components/SidedCharacterPanel.vue'
+import CharacterPanel from './components/CharacterPanel.vue'
 import { mainLogic } from './main.ts';
 
 function onClockClick(_: MouseEvent) {
@@ -19,7 +19,7 @@ function onClockClick(_: MouseEvent) {
 <template>
   <div class="flex flex-row w-full h-full">
     <div class="flex flex-col flex-1">
-      <SidedCharacterPanel class="flex-1" />
+      <CharacterPanel class="flex-1" />
       <div>
         <button type="button" class="btn rounded-none" @click="onClockClick">
           {{ mainLogic.eventclock.running ? $t("button.main.pause") : $t("button.main.resume") }}

@@ -1,7 +1,8 @@
-import { Player } from "../core/player";
-import { LocationId as LocationID } from "../core/location";
+import { Player } from "../core/player/player";
+import { CombatLocation, LocationId as LocationID, Locations } from "../core/location";
 import { alea } from 'seedrandom'
 import { Activities, ActivityID } from "../core/activity";
+import { NPCsID } from "../core/npc";
 
 const MAX_TICK_ONCE = 1000;
 const MAX_UI_FRAME = 600;
@@ -11,17 +12,8 @@ export class Clock {
     totalTicks = 0;
     lastTicked = 0;
     tickSpeed = 1;
-    tickInterval = 1000;
+    tickInterval = 16;
     timerId: number = NaN;
-
-    init() {
-        this.totalTicks = 0;
-        this.lastTicked = 0;
-        this.tickSpeed = 0;
-        this.tickInterval = 1000;
-        this.stop();
-        this.timerId = NaN;
-    }
 
     subscribers: (() => void)[] = [];
 
@@ -63,10 +55,19 @@ export class MainLogic {
     eventclock: Clock = new Clock();
 
     currentPlayer: Player = new Player("Player");
+    currentSelectedNpc?: NPCsID = undefined;
     currentLocation: LocationID = "home";
     currentActivity?: ActivityID = undefined;
 
-    inCombatArea: boolean = false;
+    get inCombatArea(){
+        if(Locations[this.currentLocation] instanceof CombatLocation){
+            let loc = Locations[this.currentLocation] as CombatLocation;
+            return !loc.completed;
+        }
+        else {
+            return false;
+        }
+    }
 
     get weather() {
         let rnd = alea(Math.floor((this.eventclock.totalTicks) / (1000 * 3600 * 24)))()
@@ -78,6 +79,39 @@ export class MainLogic {
         } else {
             return 'rainy'
         }
+    }
+
+    get daytime(){
+        let t = new Date(this.eventclock.totalTicks).getHours();
+
+        if(t > 2 && t <= 5){
+            return 'dawn';
+        }
+        else if(t > 5 && t <= 8){
+            return 'morning';
+        }
+        else if(t > 8 && t <= 10){
+            return 'forenoon';
+        }
+        else if(t > 10 && t <= 12){
+            return 'noon';
+        }
+        else if(t > 12 && t <= 17){
+            return 'afternoon';
+        }
+        else if(t > 17 && t <= 19){
+            return 'evening';
+        }
+        else if(t > 19 && t <= 22){
+            return 'night';
+        }
+        else{
+            return 'late_night';
+        }
+    }
+
+    get isDay(){
+        return ['dawn', 'morning', 'forenoon', 'noon', 'afternoon'].indexOf(this.daytime) >= 0
     }
 
     tryLoad(path:string){
@@ -120,6 +154,14 @@ export class MainLogic {
         this.currentActivity = undefined;
     }
 
+    startTalkWithNpc(id: NPCsID){
+        this.currentSelectedNpc = id;
+    }
+
+    stopTalkWithNpc(){
+        this.currentSelectedNpc = undefined;
+    }
+
     enableUIAnimation(){
         this.disableUIAnimation();
         this.uiclock = setInterval(() => this.uiframe = (this.uiframe + 1) % MAX_UI_FRAME, UI_UPDATE_INTERVAL);
@@ -138,3 +180,5 @@ export class MainLogic {
         return this.instance;
     }
 }
+
+export type DayTime = MainLogic['daytime']

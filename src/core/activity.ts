@@ -78,8 +78,9 @@ export const Activities = {
         (logic) => {
             logic.currentPlayer.statusModifiers.push({
                 id: "run_around",
+                priority: 0,
                 applyToStaminaRegen(_) {
-                    return -3;
+                    return -1;
                 }
             })
         },

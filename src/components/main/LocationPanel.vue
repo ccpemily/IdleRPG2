@@ -23,12 +23,14 @@ const date = computed(() => new Date(mainLogic.eventclock.totalTicks));
                 + $t(weekdays[date.getDay()])
                 + '\t'
                 + date.toLocaleTimeString() 
+                + '\t'
+                + $t("time." + mainLogic.daytime)
             }}</a>
         </p>
         <p class="flex h-8 mx-2 items-center text-center">{{ $t("weather." + mainLogic.weather) }}</p>
         <FontAwesomeIcon :icon="weather2icon[mainLogic.weather]" class="w-6 h-6 right-0"/>
     </div>
-    <div class="w-full flex-1">
+    <div class="w-full flex flex-col flex-1">
         <LocationInfoPanel/>
     </div>
     
