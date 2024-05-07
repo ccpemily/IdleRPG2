@@ -3,6 +3,10 @@ import { LivingEntity } from "./livingentity";
 
 export type EntityAttributeType = 'strength' | 'constitution' | 'dexterity' | 'intelligence' | 'wisdom' | 'charisma';
 
+export function getEntityAttribute(entity: LivingEntity, attribute: EntityAttributeType){
+    return entity[attribute];
+}
+
 export class AttributeChangedEventArgs extends EventArgs{
     prev: number;
     newval: number;

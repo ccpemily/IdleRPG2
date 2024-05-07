@@ -1,7 +1,7 @@
 import { useI18n } from "vue-i18n";
-import { LocationId, Locations, Routes } from "../../core/location";
+import { LocationID, Locations, Routes } from "../../core/location";
 
-export default function ({ from, to, onclick }: { from: LocationId, to: LocationId, onclick: ({ from, to }: { from: LocationId, to: LocationId }) => void }) {
+export default function ({ from, to, onclick }: { from: LocationID, to: LocationID, onclick: ({ from, to }: { from: LocationID, to: LocationID }) => void }) {
     const { t } = useI18n()
     const route = Routes[from].find(r => r.dst == to);
     return (<li>

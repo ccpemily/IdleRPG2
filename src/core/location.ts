@@ -1,8 +1,9 @@
 import { ActivityID } from "./activity";
-import { NPC, NPCsID } from "./npc";
+import { NPCsID } from "./npc";
+import { RegistryClass, Registry } from "./staticregistry";
 
-export class Location {
-    id: string;
+@Registry(() => Locations)
+export class Location extends RegistryClass<typeof Locations> {
     activities: ActivityID[] = [];
     npcs: NPCsID[] = [];
     isRestingArea: boolean = false;
@@ -16,8 +17,8 @@ export class Location {
         return "location." + this.id + ".description";
     }
 
-    constructor(id: string, activities:ActivityID[]=[], npcs:NPCsID[]=[], restingArea?:boolean, varyWithDaytime?:boolean) {
-        this.id = id;
+    constructor(activities:ActivityID[]=[], npcs:NPCsID[]=[], restingArea?:boolean, varyWithDaytime?:boolean) {
+        super();
         this.activities = this.activities.concat(activities);
         this.npcs = this.npcs.concat(npcs);
         this.isRestingArea = restingArea;
@@ -26,23 +27,23 @@ export class Location {
 }
 
 export class CombatLocation extends Location{
-    respawnLocID:LocationId = 'home';
+    respawnLocID:LocationID = 'home';
     completed:boolean = false;
 
-    constructor(id: string) {
-        super(id, [], [], false);
+    constructor() {
+        super([], [], false);
     }
 }
 
 export const Locations = {
-    "home": new Location("home", ["sleep"], [], true),
-    "village": new Location("village", ["run_around"], ["village_elder"], true, true),
-    "cave": new Location("cave"),
-    "deep_cave": new CombatLocation("deep_cave")
+    "home": new Location(["sleep"], [], true),
+    "village": new Location(["run_around"], ["village_elder"], true, true),
+    "cave": new Location(),
+    "deep_cave": new CombatLocation()
 } as const;
 
-export type LocationId = keyof typeof Locations
-export const Routes: Record<LocationId, { dst: LocationId, text: string }[]> = {
+export type LocationID = keyof typeof Locations
+export const Routes: Record<LocationID, { dst: LocationID, text: string }[]> = {
     home: [{ dst: "village", text: "route.goto" }],
     village: [{ dst: "home", text: "route.gohome" }, { dst: "cave", text: "route.goto" }],
     cave: [{ dst: "village", text: "route.back" }, { dst: "deep_cave", text: "route.goto" }],

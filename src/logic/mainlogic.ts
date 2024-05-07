@@ -1,5 +1,5 @@
 import { Player } from "../core/player/player";
-import { CombatLocation, LocationId as LocationID, Locations } from "../core/location";
+import { CombatLocation, LocationID as LocationID, Locations } from "../core/location";
 import { alea } from 'seedrandom'
 import { Activities, ActivityID } from "../core/activity";
 import { NPCsID } from "../core/npc";
