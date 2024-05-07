@@ -1,7 +1,6 @@
-import { RegistryClass, Registry } from "./staticregistry";
+import { RegistryClass, createRegistry } from "./staticregistry";
 
-@Registry(() => Items)
-export class Item extends RegistryClass<typeof Items>{
+export class Item extends RegistryClass<string>{
     get name() {
         return "item." + this.id + ".name";
     }
@@ -67,10 +66,10 @@ export class FoodItem extends Item{
 
 }
 
-export const Items = {
+export const Items = createRegistry({
     "empty": new Item(),
     "air": new Item(),
     "test": new Item()
-} as const;
+});
 
 export type ItemID = keyof typeof Items;

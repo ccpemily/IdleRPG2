@@ -1,7 +1,11 @@
-export class PlayerSkill {
-    id:string;
+import { RegistryClass, createRegistry } from "./staticregistry";
 
-    constructor(id:string){
-        this.id = id;
-    }
+export class PlayerSkill extends RegistryClass<string> {
+
 }
+
+export const PlayerSkills = createRegistry({
+    "default": new PlayerSkill()
+});
+
+export type PlayerSkillID = keyof typeof PlayerSkills;

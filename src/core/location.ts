@@ -1,9 +1,8 @@
 import { ActivityID } from "./activity";
 import { NPCsID } from "./npc";
-import { RegistryClass, Registry } from "./staticregistry";
+import { RegistryClass, createRegistry } from "./staticregistry";
 
-@Registry(() => Locations)
-export class Location extends RegistryClass<typeof Locations> {
+export class Location extends RegistryClass<string> {
     activities: ActivityID[] = [];
     npcs: NPCsID[] = [];
     isRestingArea: boolean = false;
@@ -35,14 +34,15 @@ export class CombatLocation extends Location{
     }
 }
 
-export const Locations = {
+export const Locations = createRegistry({
     "home": new Location(["sleep"], [], true),
     "village": new Location(["run_around"], ["village_elder"], true, true),
     "cave": new Location(),
     "deep_cave": new CombatLocation()
-} as const;
+});
 
-export type LocationID = keyof typeof Locations
+export type LocationID = keyof typeof Locations;
+
 export const Routes: Record<LocationID, { dst: LocationID, text: string }[]> = {
     home: [{ dst: "village", text: "route.goto" }],
     village: [{ dst: "home", text: "route.gohome" }, { dst: "cave", text: "route.goto" }],

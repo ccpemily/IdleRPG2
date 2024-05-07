@@ -60,8 +60,8 @@ export interface IEntityStatusModifier {
     id:string;
     priority:number;
 
-    applyToMax: Record<EntityStatusType, (value: number) => number>;
-    applyToRegen: Record<EntityStatusType, (value: number) => number>;
+    applyToMax?: Record<EntityStatusType, (value: number) => number>;
+    applyToRegen?: Record<EntityStatusType, (value: number) => number>;
 
     applyToExperienceGain?: (gained:number) => number;
 }

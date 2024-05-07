@@ -1,9 +1,9 @@
 import { MainLogic } from "../logic/mainlogic";
+import { RegistryClass, createRegistry } from "./staticregistry";
 
 const TICK_SPEED_WHEN_SLEEPING = 6
 
-export class Activity {
-    private _name:string;
+export class Activity extends RegistryClass<string>{
     tickCooldown:number = -1;
     tickFreq:number = -1;
     onActivityStart:(logic: MainLogic) => void;
@@ -14,23 +14,22 @@ export class Activity {
 
 
     get name(){
-        return "activity." + this._name + ".name";
+        return "activity." + this.id + ".name";
     }
 
     get textWhenDoing(){
-        return "activity." + this._name + ".text";
+        return "activity." + this.id + ".text";
     }
 
     get description(){
-        return "activity." + this._name + ".description";
+        return "activity." + this.id + ".description";
     }
 
     get textWhenStop(){
-        return "activity." + this._name + ".stop";
+        return "activity." + this.id + ".stop";
     }
 
     constructor(
-        id:string, 
         onActivityStart?: (logic: MainLogic) => void, 
         onActivityTick?: (logic: MainLogic) => void, 
         onActivityResulted?: (logic: MainLogic) => void,
@@ -38,7 +37,7 @@ export class Activity {
         shouldContinue?: (logic: MainLogic) => boolean,
         freq?: number
     ){
-        this._name = id;
+        super();
         if(freq){
             this.tickFreq = freq;
         }
@@ -61,9 +60,8 @@ export class Activity {
     }
 }
 
-export const Activities = {
+export const Activities = createRegistry({
     "sleep" : new Activity(
-        "sleep",
         (logic) => {
             logic.eventclock.tickSpeed = TICK_SPEED_WHEN_SLEEPING;
         },
@@ -74,30 +72,30 @@ export const Activities = {
         }
     ),
     "run_around" : new Activity(
-        "run_around",
         (logic) => {
             logic.currentPlayer.statusModifiers.push({
                 id: "run_around",
                 priority: 0,
-                applyToStaminaRegen(_) {
-                    return -1;
+                applyToRegen: {
+                    health: undefined,
+                    mana: undefined,
+                    stamina: (_) => -1
                 }
             })
         },
         (_) => {},
-        (logic) => {
-            let player = logic.currentPlayer;
-            player.baseMaxStamina += player.level * 2;
+        (_) => {
+            
         },
         (logic) => {
             let idx = logic.currentPlayer.statusModifiers.findIndex((value) => {value.id == "run_around"});
             logic.currentPlayer.statusModifiers.splice(idx, 1);
         },
         (logic) => {
-            return logic.currentPlayer.stamina > 0;
+            return logic.currentPlayer.stamina.value > 0;
         },
         60
     )
-}
+});
 
 export type ActivityID = keyof typeof Activities;

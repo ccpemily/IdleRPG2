@@ -5,7 +5,7 @@ import RouteRenderer from './tsx/RouteRenderer';
 import LocationActivitiesRenderer from './tsx/LocationActivitiesRenderer';
 import ActivityRenderer from './tsx/ActivityRenderer';
 import { mainLogic } from '../main';
-import { LocationId, Routes, Locations } from '../core/location';
+import { LocationID, Routes, Locations } from '../core/location';
 
 import { ActivityID } from '../core/activity';
 import LogPanel from './main/LogPanel.vue';
@@ -17,7 +17,7 @@ import { NPCsID } from '../core/npc';
 const tab = ref('events' as 'events' | 'inventory' | 'story')
 const loc = computed(() => mainLogic.currentLocation)
 
-function onRouteClick({ to }: { to: LocationId }) {
+function onRouteClick({ to }: { to: LocationID }) {
     mainLogic.currentLocation = to
     console.log("Changed location")
 }

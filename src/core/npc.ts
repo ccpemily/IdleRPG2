@@ -1,3 +1,5 @@
+import { RegistryClass, createRegistry } from "./staticregistry";
+
 export class DialogOption {
     id:string;
 
@@ -6,21 +8,16 @@ export class DialogOption {
     }
 }
 
-export class NPC {
-    id:string;
+export class NPC extends RegistryClass<string>{
     selectType = 'talk';
 
     get name(){
         return "npc." + this.id + ".name";
     }
-
-    constructor(id: string){
-        this.id = id;
-    }
 }
 
-export const NPCs = {
-    "village_elder": new NPC("village_elder")
-}
+export const NPCs = createRegistry({
+    "village_elder": new NPC()
+});
 
 export type NPCsID = keyof typeof NPCs;
