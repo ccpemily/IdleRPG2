@@ -8,19 +8,44 @@ export class Item extends RegistryClass<typeof Items>{
 
     constructor(properties? : ItemProperties){
         super();
+        if(properties){
+
+        }
     }
 }
 
 export class ItemProperties {
-    stacksTo: -1;
+    _stacksTo = -1;
+    _color = 0;
+    _desc: string[] = []
 
     static get(){
         return new ItemProperties();
+    }
+
+    stacksTo(count: number){
+        this._stacksTo = count;
+        return this;
+    }
+
+    withColor(color: number){
+        this._color = color;
+        return this;
+    }
+
+    withDescription(desc: string[]){
+        this._desc.concat(desc);
+        return this;
     }
 }
 
 export class ItemStack {
     private _count: number;
+    private _item: Item;
+
+    get item(){
+        return this._item;
+    }
 
     get count(){
         return this._count;
